@@ -90,6 +90,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
 .submit-btn { width: 100%; background: var(--purple); color: white; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 4px; }
 .submit-btn:hover { background: var(--purple-dark); }
 .submit-btn:active { transform: scale(0.98); }
+.submit-btn:disabled { background: var(--purple-mid); cursor: not-allowed; }
 
 .success-box { display: none; background: white; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
 .success-header { background: var(--purple); padding: 1.5rem; text-align: center; }
@@ -150,7 +151,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
         <div class="field"><label>Jméno a příjmení</label><input type="text" id="inp-name" placeholder="Jana Nováková"></div>
         <div class="field"><label>E-mail nebo telefon</label><input type="text" id="inp-contact" placeholder="jana@email.cz"></div>
         <div class="field"><label>Jméno dítěte (volitelně)</label><input type="text" id="inp-child" placeholder="Tomáš"></div>
-        <button class="submit-btn" onclick="submitOrder()">Odeslat objednávku →</button>
+        <button class="submit-btn" id="submit-btn" onclick="submitOrder()">Odeslat objednávku →</button>
       </div>
     </div>
 
@@ -186,11 +187,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
 </div>
 
 <script>
-const PRODUCTS = [
+var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwAktOsKJ_9BQIaJW81oLPaMC4mrUbapzRX5_FuSFqiGqOfzxtwx2zCtwQR3WsKoW59mg/exec';
+
+var PRODUCTS = [
   { id:'tricko',     name:'Tričko',        price:350, icon:'👕', sizes:['XS','S','M','L','XL','XXL'] },
   { id:'mikina',     name:'Mikina',         price:650, icon:'🧥', sizes:['XS','S','M','L','XL','XXL'] },
   { id:'bunda',      name:'Bunda',          price:950, icon:'🧥', sizes:['XS','S','M','L','XL','XXL'] },
-  { id:'vesta',      name:'Vesta',          price:550, icon:'🦺', sizes:['XS','S','M','L','XL','XXL'] },
   { id:'ksiltovka',  name:'Kšiltovka',      price:350, icon:'🧢', sizes:['Uni'] },
   { id:'sala',       name:'Šála',           price:250, icon:'🧣', sizes:['Uni'] },
   { id:'ponozky',    name:'Ponožky',        price:150, icon:'🧦', sizes:['S (35–38)','M (39–42)','L (43–46)'] },
@@ -198,7 +200,18 @@ const PRODUCTS = [
   { id:'det-mikina', name:'Dětská mikina',  price:490, icon:'🧥', sizes:['92','104','116','128','140','152'] },
 ];
 
-const state = {};
+var PRODUCT_MAP = {
+  'tricko': 'tricko',
+  'mikina': 'mikina',
+  'bunda': 'bunda',
+  'ksiltovka': 'ksiltovka',
+  'sala': 'sala',
+  'ponozky': 'ponozky',
+  'det-tricko': 'detTricko',
+  'det-mikina': 'detMikina'
+};
+
+var state = {};
 PRODUCTS.forEach(function(p) {
   var sizes = {};
   p.sizes.forEach(function(sz) { sizes[sz] = 0; });
@@ -206,15 +219,15 @@ PRODUCTS.forEach(function(p) {
 });
 
 function totalQty(id) {
-  var s = state[id].sizes; var t = 0;
-  Object.keys(s).forEach(function(sz) { t += s[sz]; });
+  var t = 0;
+  Object.keys(state[id].sizes).forEach(function(sz) { t += state[id].sizes[sz]; });
   return t;
 }
 
 function renderProducts() {
   document.getElementById('products-grid').innerHTML = PRODUCTS.map(function(p) {
     var st = state[p.id];
-    var bubblesHtml = p.sizes.map(function(sz) {
+    var sizesHtml = p.sizes.map(function(sz) {
       var q = st.sizes[sz];
       return '<div class="size-row">'
         + '<span class="size-tag' + (q > 0 ? ' has-qty' : '') + '">' + sz + '</span>'
@@ -229,9 +242,8 @@ function renderProducts() {
       + '<div class="pcard-icon">' + p.icon + '</div>'
       + '<div class="pcard-name">' + p.name + '</div>'
       + '<div class="pcard-price">' + p.price + ' Kč / ks</div>'
-      + '<div class="pcard-controls" onclick="event.stopPropagation()">'
-      + bubblesHtml
-      + '</div></div>';
+      + '<div class="pcard-controls" onclick="event.stopPropagation()">' + sizesHtml + '</div>'
+      + '</div>';
   }).join('');
 }
 
@@ -243,8 +255,7 @@ function toggleProduct(id) {
 function chq(id, sz, d) {
   state[id].sizes[sz] = Math.max(0, state[id].sizes[sz] + d);
   var hasAny = totalQty(id) > 0;
-  if (hasAny && !state[id].active) state[id].active = true;
-  if (!hasAny && state[id].active) state[id].active = false;
+  state[id].active = hasAny;
   renderProducts(); renderCart();
 }
 
@@ -255,11 +266,7 @@ function renderCart() {
     if (!state[p.id].active) return;
     Object.keys(state[p.id].sizes).forEach(function(sz) {
       var q = state[p.id].sizes[sz];
-      if (q > 0) {
-        var sub = p.price * q;
-        total += sub;
-        rows.push({ name: p.name, sz: sz, q: q, sub: sub });
-      }
+      if (q > 0) { var sub = p.price * q; total += sub; rows.push({ name: p.name, sz: sz, q: q, sub: sub }); }
     });
   });
   var n = rows.length;
@@ -284,6 +291,7 @@ function submitOrder() {
   var child = document.getElementById('inp-child').value.trim();
   var rows = [];
   var total = 0;
+
   PRODUCTS.forEach(function(p) {
     if (!state[p.id].active) return;
     Object.keys(state[p.id].sizes).forEach(function(sz) {
@@ -291,21 +299,50 @@ function submitOrder() {
       if (q > 0) { var sub = p.price * q; total += sub; rows.push({ name: p.name, sz: sz, q: q, sub: sub }); }
     });
   });
+
   if (!name) { alert('Vyplňte prosím jméno.'); return; }
   if (!contact) { alert('Vyplňte prosím e-mail nebo telefon.'); return; }
   if (!rows.length) { alert('Přidejte alespoň jeden produkt.'); return; }
+
   var vs = Math.floor(Math.random() * 900000) + 100000;
   var qrData = 'SPD*1.0*ACC:CZ6508000000001234567890*AM:' + total + '.00*CC:CZK*MSG:Merch Kunratice*X-VS:' + vs;
+
   document.getElementById('success-name').textContent = 'Děkujeme, ' + name + (child ? ' (dítě: ' + child + ')' : '') + '!';
   document.getElementById('vs-display').textContent = vs;
   document.getElementById('amount-display').textContent = total + ' Kč';
   document.getElementById('order-list').innerHTML = rows.map(function(r) {
     return r.name + ' (' + r.sz + ') × ' + r.q + ' = <strong>' + r.sub + ' Kč</strong>';
   }).join('<br>') + '<br><br><strong>Celkem: ' + total + ' Kč · VS: ' + vs + '</strong>';
+
   document.getElementById('qr-canvas').innerHTML = '';
   new QRCode(document.getElementById('qr-canvas'), { text: qrData, width: 180, height: 180, colorDark: '#4A1E8A', colorLight: '#ffffff' });
+
   document.getElementById('form-box').style.display = 'none';
   document.getElementById('success-box').style.display = 'block';
+
+  var payload = {
+    jmeno: name,
+    kontakt: contact,
+    dite: child,
+    tricko: '', mikina: '', bunda: '', ksiltovka: '',
+    sala: '', ponozky: '', detTricko: '', detMikina: '',
+    celkem: total,
+    vs: vs
+  };
+
+  PRODUCTS.forEach(function(p) {
+    var parts = [];
+    Object.keys(state[p.id].sizes).forEach(function(sz) {
+      var q = state[p.id].sizes[sz];
+      if (q > 0) parts.push(q + '×' + sz);
+    });
+    if (parts.length > 0) payload[PRODUCT_MAP[p.id]] = parts.join(', ');
+  });
+
+  fetch(SHEETS_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }).catch(function() {});
 }
 
 renderProducts();
