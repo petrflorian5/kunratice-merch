@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SK Slovan Kunratice — Merch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+  --purple: #4A1E8A;
+  --purple-dark: #2E0F6A;
+  --purple-mid: #6B35C2;
+  --purple-light: #9B6FDF;
+  --purple-pale: #F0EAFF;
+  --off-white: #FAF9FC;
+  --text: #1A0A2E;
+  --text-muted: #6B5E85;
+  --border: rgba(74,30,138,0.12);
+  --radius: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
+
+.hero { background: var(--purple-dark); position: relative; overflow: hidden; }
+.hero-pattern { position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 0, transparent 50%); background-size: 24px 24px; }
+.hero-accent { position: absolute; right: -80px; top: -80px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(107,53,194,0.5) 0%, transparent 70%); pointer-events: none; }
+.hero-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
+.hero-logo { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+.hero-titles { flex: 1; }
+.hero-label { font-size: 11px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+.hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 5vw, 52px); color: white; line-height: 1; letter-spacing: 1px; }
+.hero-title span { color: var(--purple-light); }
+.hero-sub { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 6px; }
+.hero-deadline { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; padding: 8px 18px; font-size: 13px; color: rgba(255,255,255,0.85); white-space: nowrap; flex-shrink: 0; text-align: center; }
+.hero-deadline strong { color: white; display: block; }
+
+.page { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
+@media (max-width: 700px) { .page { grid-template-columns: 1fr; } .hero-inner { flex-wrap: wrap; } }
+
+.section-label { font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple-mid); margin-bottom: 1rem; }
+
+.products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (max-width: 500px) { .products-grid { grid-template-columns: 1fr; } }
+.pcard { background: white; border: 1.5px solid transparent; border-radius: var(--radius); padding: 1rem; cursor: pointer; transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; user-select: none; position: relative; }
+.pcard:hover { border-color: var(--purple-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,30,138,0.1); }
+.pcard.active { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(74,30,138,0.1); }
+.pcard-check { position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; background: var(--purple); border-radius: 50%; display: none; align-items: center; justify-content: center; }
+.pcard.active .pcard-check { display: flex; }
+.pcard-check svg { width: 11px; height: 11px; }
+.pcard-icon { width: 48px; height: 48px; background: var(--purple-pale); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 10px; }
+.pcard-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.pcard-price { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.pcard-controls { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.pcard.active .pcard-controls { display: block; }
+.size-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; border-bottom: 0.5px solid var(--border); }
+.size-row:last-child { border-bottom: none; }
+.size-tag { font-size: 12px; font-weight: 500; color: var(--text-muted); min-width: 48px; }
+.size-tag.has-qty { color: var(--purple); }
+.size-qty-row { display: flex; align-items: center; gap: 6px; }
+.qty-btn { width: 22px; height: 22px; border: 1px solid var(--border); border-radius: 6px; background: var(--off-white); cursor: pointer; font-size: 14px; color: var(--text); display: flex; align-items: center; justify-content: center; transition: background 0.15s; line-height: 1; padding: 0; }
+.qty-btn:hover { background: var(--purple-pale); border-color: var(--purple-light); }
+.qty-val { font-size: 12px; font-weight: 500; min-width: 16px; text-align: center; color: var(--text); }
+
+.sidebar { display: flex; flex-direction: column; gap: 1rem; }
+.cart-box { background: white; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+.cart-header { background: var(--purple); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+.cart-header-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: white; letter-spacing: 1px; }
+.cart-badge { background: rgba(255,255,255,0.2); color: white; font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 100px; }
+.cart-body { padding: 1rem 1.25rem; }
+.cart-empty { font-size: 13px; color: var(--text-muted); padding: 0.5rem 0; }
+.cart-row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 13px; padding: 7px 0; border-bottom: 1px solid var(--border); gap: 8px; }
+.cart-row:last-child { border-bottom: none; }
+.cart-row-name { color: var(--text); line-height: 1.4; }
+.cart-row-meta { font-size: 11px; color: var(--text-muted); }
+.cart-row-price { font-weight: 500; white-space: nowrap; color: var(--text); }
+.cart-total-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; background: var(--purple-pale); border-top: 1px solid var(--border); }
+.cart-total-label { font-size: 12px; font-weight: 500; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; }
+.cart-total-amount { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--purple); }
+
+.form-box { background: white; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+.form-header { padding: 1rem 1.25rem 0; }
+.form-header p { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--purple-mid); margin-bottom: 0.75rem; }
+.form-body { padding: 0 1.25rem 1.25rem; }
+.field { margin-bottom: 10px; }
+.field label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+.field input { width: 100%; font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--off-white); color: var(--text); outline: none; transition: border-color 0.2s; }
+.field input:focus { border-color: var(--purple-light); background: white; }
+.submit-btn { width: 100%; background: var(--purple); color: white; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 4px; }
+.submit-btn:hover { background: var(--purple-dark); }
+.submit-btn:active { transform: scale(0.98); }
+
+.success-box { display: none; background: white; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+.success-header { background: var(--purple); padding: 1.5rem; text-align: center; }
+.success-icon { width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
+.success-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: white; letter-spacing: 1px; }
+.success-header p { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 4px; }
+.success-body { padding: 1.25rem; }
+.qr-wrapper { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; }
+.bank-info { background: var(--purple-pale); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+.bank-info strong { color: var(--text); }
+.order-list { font-size: 12px; color: var(--text-muted); line-height: 1.8; }
+.order-list strong { color: var(--purple); font-size: 13px; }
+
+.page-footer { text-align: center; padding: 1.5rem; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); max-width: 900px; margin: 0 auto; }
+.page-footer a { color: var(--purple); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <img class="hero-logo" src="./SK-SLOVAN-Kunratice_logo_S.png" alt="SK Slovan Kunratice">
+    <div class="hero-titles">
+      <div class="hero-label">Mladší přípravka · Ročníky 2017/2018</div>
+      <div class="hero-title">SK Slovan <span>Kunratice</span><br>Merch 2025</div>
+      <div class="hero-sub">Komunitní kolekce pro rodiče a fanoušky</div>
+    </div>
+    <div class="hero-deadline">Objednávky do<br><strong>15. dubna 2025</strong></div>
+  </div>
+</div>
+
+<div class="page">
+  <div>
+    <div class="section-label">Vyberte produkty</div>
+    <div class="products-grid" id="products-grid"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="cart-box">
+      <div class="cart-header">
+        <div class="cart-header-title">Košík</div>
+        <div class="cart-badge" id="cart-count">0 položek</div>
+      </div>
+      <div class="cart-body" id="cart-body">
+        <div class="cart-empty">Zatím nic v košíku.<br>Klikněte na produkt.</div>
+      </div>
+      <div class="cart-total-row" id="cart-total-row" style="display:none">
+        <div class="cart-total-label">Celkem</div>
+        <div class="cart-total-amount" id="cart-total-amount">0 Kč</div>
+      </div>
+    </div>
+
+    <div class="form-box" id="form-box">
+      <div class="form-header"><p>Kontaktní údaje</p></div>
+      <div class="form-body">
+        <div class="field"><label>Jméno a příjmení</label><input type="text" id="inp-name" placeholder="Jana Nováková"></div>
+        <div class="field"><label>E-mail nebo telefon</label><input type="text" id="inp-contact" placeholder="jana@email.cz"></div>
+        <div class="field"><label>Jméno dítěte (volitelně)</label><input type="text" id="inp-child" placeholder="Tomáš"></div>
+        <button class="submit-btn" onclick="submitOrder()">Odeslat objednávku →</button>
+      </div>
+    </div>
+
+    <div class="success-box" id="success-box">
+      <div class="success-header">
+        <div class="success-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>Objednávka přijata!</h2>
+        <p id="success-name">Děkujeme za objednávku.</p>
+      </div>
+      <div class="success-body">
+        <div class="qr-wrapper">
+          <div id="qr-canvas"></div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:10px; text-align:center;">Naskenujte pro okamžitou platbu</div>
+        </div>
+        <div class="bank-info">
+          <strong>SK Slovan Kunratice</strong><br>
+          Číslo účtu: <strong>123456789/0800</strong><br>
+          Variabilní symbol: <strong id="vs-display">—</strong><br>
+          Částka: <strong id="amount-display">—</strong>
+        </div>
+        <div class="order-list" id="order-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-footer">
+  SK Slovan Kunratice · Mladší přípravka · Dotazy: <a href="mailto:petrflorian@icloud.com">petrflorian@icloud.com</a>
+</div>
+
+<script>
+const PRODUCTS = [
+  { id:'tricko',     name:'Tričko',        price:350, icon:'👕', sizes:['XS','S','M','L','XL','XXL'] },
+  { id:'mikina',     name:'Mikina',         price:650, icon:'🧥', sizes:['XS','S','M','L','XL','XXL'] },
+  { id:'bunda',      name:'Bunda',          price:950, icon:'🧥', sizes:['XS','S','M','L','XL','XXL'] },
+  { id:'vesta',      name:'Vesta',          price:550, icon:'🦺', sizes:['XS','S','M','L','XL','XXL'] },
+  { id:'ksiltovka',  name:'Kšiltovka',      price:350, icon:'🧢', sizes:['Uni'] },
+  { id:'sala',       name:'Šála',           price:250, icon:'🧣', sizes:['Uni'] },
+  { id:'ponozky',    name:'Ponožky',        price:150, icon:'🧦', sizes:['S (35–38)','M (39–42)','L (43–46)'] },
+  { id:'det-tricko', name:'Dětské tričko',  price:290, icon:'👕', sizes:['92','104','116','128','140','152'] },
+  { id:'det-mikina', name:'Dětská mikina',  price:490, icon:'🧥', sizes:['92','104','116','128','140','152'] },
+];
+
+const state = {};
+PRODUCTS.forEach(function(p) {
+  var sizes = {};
+  p.sizes.forEach(function(sz) { sizes[sz] = 0; });
+  state[p.id] = { active: false, sizes: sizes };
+});
+
+function totalQty(id) {
+  var s = state[id].sizes; var t = 0;
+  Object.keys(s).forEach(function(sz) { t += s[sz]; });
+  return t;
+}
+
+function renderProducts() {
+  document.getElementById('products-grid').innerHTML = PRODUCTS.map(function(p) {
+    var st = state[p.id];
+    var bubblesHtml = p.sizes.map(function(sz) {
+      var q = st.sizes[sz];
+      return '<div class="size-row">'
+        + '<span class="size-tag' + (q > 0 ? ' has-qty' : '') + '">' + sz + '</span>'
+        + '<div class="size-qty-row">'
+        + '<button class="qty-btn" onclick="chq(\'' + p.id + '\',\'' + sz + '\',-1)">−</button>'
+        + '<span class="qty-val">' + q + '</span>'
+        + '<button class="qty-btn" onclick="chq(\'' + p.id + '\',\'' + sz + '\',1)">+</button>'
+        + '</div></div>';
+    }).join('');
+    return '<div class="pcard' + (st.active ? ' active' : '') + '" onclick="toggleProduct(\'' + p.id + '\')">'
+      + '<div class="pcard-check"><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5l3 3 6-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
+      + '<div class="pcard-icon">' + p.icon + '</div>'
+      + '<div class="pcard-name">' + p.name + '</div>'
+      + '<div class="pcard-price">' + p.price + ' Kč / ks</div>'
+      + '<div class="pcard-controls" onclick="event.stopPropagation()">'
+      + bubblesHtml
+      + '</div></div>';
+  }).join('');
+}
+
+function toggleProduct(id) {
+  state[id].active = !state[id].active;
+  renderProducts(); renderCart();
+}
+
+function chq(id, sz, d) {
+  state[id].sizes[sz] = Math.max(0, state[id].sizes[sz] + d);
+  var hasAny = totalQty(id) > 0;
+  if (hasAny && !state[id].active) state[id].active = true;
+  if (!hasAny && state[id].active) state[id].active = false;
+  renderProducts(); renderCart();
+}
+
+function renderCart() {
+  var rows = [];
+  var total = 0;
+  PRODUCTS.forEach(function(p) {
+    if (!state[p.id].active) return;
+    Object.keys(state[p.id].sizes).forEach(function(sz) {
+      var q = state[p.id].sizes[sz];
+      if (q > 0) {
+        var sub = p.price * q;
+        total += sub;
+        rows.push({ name: p.name, sz: sz, q: q, sub: sub });
+      }
+    });
+  });
+  var n = rows.length;
+  document.getElementById('cart-count').textContent = n + (n === 1 ? ' položka' : n < 5 ? ' položky' : ' položek');
+  if (!rows.length) {
+    document.getElementById('cart-body').innerHTML = '<div class="cart-empty">Zatím nic v košíku.<br>Klikněte na produkt.</div>';
+    document.getElementById('cart-total-row').style.display = 'none';
+    return;
+  }
+  document.getElementById('cart-body').innerHTML = rows.map(function(r) {
+    return '<div class="cart-row"><div><div class="cart-row-name">' + r.name + '</div>'
+      + '<div class="cart-row-meta">' + r.sz + ' × ' + r.q + '</div></div>'
+      + '<div class="cart-row-price">' + r.sub + ' Kč</div></div>';
+  }).join('');
+  document.getElementById('cart-total-row').style.display = 'flex';
+  document.getElementById('cart-total-amount').textContent = total + ' Kč';
+}
+
+function submitOrder() {
+  var name = document.getElementById('inp-name').value.trim();
+  var contact = document.getElementById('inp-contact').value.trim();
+  var child = document.getElementById('inp-child').value.trim();
+  var rows = [];
+  var total = 0;
+  PRODUCTS.forEach(function(p) {
+    if (!state[p.id].active) return;
+    Object.keys(state[p.id].sizes).forEach(function(sz) {
+      var q = state[p.id].sizes[sz];
+      if (q > 0) { var sub = p.price * q; total += sub; rows.push({ name: p.name, sz: sz, q: q, sub: sub }); }
+    });
+  });
+  if (!name) { alert('Vyplňte prosím jméno.'); return; }
+  if (!contact) { alert('Vyplňte prosím e-mail nebo telefon.'); return; }
+  if (!rows.length) { alert('Přidejte alespoň jeden produkt.'); return; }
+  var vs = Math.floor(Math.random() * 900000) + 100000;
+  var qrData = 'SPD*1.0*ACC:CZ6508000000001234567890*AM:' + total + '.00*CC:CZK*MSG:Merch Kunratice*X-VS:' + vs;
+  document.getElementById('success-name').textContent = 'Děkujeme, ' + name + (child ? ' (dítě: ' + child + ')' : '') + '!';
+  document.getElementById('vs-display').textContent = vs;
+  document.getElementById('amount-display').textContent = total + ' Kč';
+  document.getElementById('order-list').innerHTML = rows.map(function(r) {
+    return r.name + ' (' + r.sz + ') × ' + r.q + ' = <strong>' + r.sub + ' Kč</strong>';
+  }).join('<br>') + '<br><br><strong>Celkem: ' + total + ' Kč · VS: ' + vs + '</strong>';
+  document.getElementById('qr-canvas').innerHTML = '';
+  new QRCode(document.getElementById('qr-canvas'), { text: qrData, width: 180, height: 180, colorDark: '#4A1E8A', colorLight: '#ffffff' });
+  document.getElementById('form-box').style.display = 'none';
+  document.getElementById('success-box').style.display = 'block';
+}
+
+renderProducts();
+renderCart();
+</script>
+</body>
+</html>
