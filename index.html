@@ -41,15 +41,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
 
 .section-label { font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple-mid); margin-bottom: 1rem; }
 
-.products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+/* Klíčová oprava: align-items: start zabrání roztahování karet */
+.products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; align-items: start; }
 @media (max-width: 500px) { .products-grid { grid-template-columns: 1fr; } }
+
 .pcard { background: white; border: 1.5px solid transparent; border-radius: var(--radius); padding: 1rem; cursor: pointer; transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; user-select: none; position: relative; }
 .pcard:hover { border-color: var(--purple-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,30,138,0.1); }
 .pcard.active { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(74,30,138,0.1); }
 .pcard-check { position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; background: var(--purple); border-radius: 50%; display: none; align-items: center; justify-content: center; }
 .pcard.active .pcard-check { display: flex; }
 .pcard-check svg { width: 11px; height: 11px; }
-.pcard-img { width: 100%; height: 140px; object-fit: contain; background: var(--purple-pale); border-radius: 10px; margin-bottom: 10px; }
+/* Bílé pozadí obrázků */
+.pcard-img { width: 100%; height: 140px; object-fit: contain; background: white; border-radius: 10px; margin-bottom: 10px; }
 .pcard-icon { width: 100%; height: 140px; background: var(--purple-pale); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; }
 .pcard-name { font-size: 14px; font-weight: 500; color: var(--text); }
 .pcard-price { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -216,22 +219,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
   <div class="modal-box" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closeModal()">&#x2715;</button>
     <h2>Podmínky a ochrana osobních údajů</h2>
-
     <h3>Kdo stojí za touto stránkou</h3>
     <p>Tato stránka je komunitní iniciativou přátel a rodičů fotbalového klubu SK Slovan Kunratice. Nejde o oficiální aktivitu ani prodej provozovaný spolkem SK Slovan Kunratice, z.s. Provozovatelem je Petr Florian, kontakt: petrflorian5@gmail.com.</p>
-
     <h3>Charakter objednávky</h3>
     <p>Odesláním formuláře vyjadřujete zájem o zakoupení merchandise. Objednávka není závaznou smlouvou &ndash; jedná se o nezávaznou poptávku. Vyhrazujeme si právo objednávku neuskutečnit, zejména v případě nedostatečného počtu objednávek, nedostupnosti zboží u dodavatele nebo z jiných provozních důvodů. V takovém případě vás budeme kontaktovat a případná platba bude neprodleně vrácena.</p>
-
     <h3>Platba</h3>
     <p>Platba probíhá ihned převodem na základě vygenerovaného variabilního symbolu. V případě neuskutečnění objednávky bude platba neprodleně vrácena na účet, ze kterého byla odeslána.</p>
-
     <h3>Ochrana osobních údajů (GDPR)</h3>
     <p>Zpracováváme pouze údaje, které sami zadáte: jméno, kontakt (e-mail nebo telefon) a jméno dítěte. Tyto údaje jsou zpracovávány výhradně za účelem vyřízení vaší objednávky a nebudou předány třetím stranám ani použity k marketingovým účelům. Údaje jsou uloženy v zabezpečené tabulce Google Sheets a budou po ukončení objednávkového kola smazány. Máte právo na přístup ke svým údajům, jejich opravu nebo výmaz &ndash; stačí napsat na petrflorian5@gmail.com.</p>
-
     <h3>Odpovědnost</h3>
     <p>Ceny, dostupnost a termíny dodání jsou orientační a mohou se změnit. Neneseme odpovědnost za případné nesrovnalosti způsobené změnami na straně dodavatele.</p>
-
     <button class="modal-btn" onclick="closeModal()">Rozumím a souhlasím</button>
   </div>
 </div>
@@ -250,9 +247,9 @@ var PRODUCTS = [
   { id:'bunda',      name:'Bunda',           price:950, icon:'🧥',        sizes:['XS','S','M','L','XL','XXL'] },
   { id:'ksiltovka',  name:'Kšiltovka',       price:350, icon:'🧢',        sizes:['Uni'] },
   { id:'sala',       name:'Šála',            price:250, icon:'🧣',        sizes:['Uni'] },
-  { id:'ponozky',    name:'Ponožky',         price:150, icon:'🧦',        sizes:['S (35–38)','M (39–42)','L (43–46)'] },
-  { id:'det-tricko', name:'Dětské tričko',   price:290, icon:'👕',        sizes:['92','104','116','128','140','152'] },
-  { id:'det-mikina', name:'Dětská mikina',   price:490, icon:'🧥',        sizes:['92','104','116','128','140','152'] },
+  { id:'ponozky',    name:'Ponožky',         price:150, icon:'🧦',        sizes:['S (35\u201338)','M (39\u201342)','L (43\u201346)'] },
+  { id:'det-tricko', name:'D\u011btsk\u00e9 tri\u010dko',   price:290, icon:'\ud83d\udc55', sizes:['92','104','116','128','140','152'] },
+  { id:'det-mikina', name:'D\u011btsk\u00e1 mikina',   price:490, icon:'\ud83e\udde5', sizes:['92','104','116','128','140','152'] },
 ];
 
 var PRODUCT_MAP = {
@@ -294,7 +291,7 @@ function renderProducts() {
       + '<div class="pcard-check"><svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5l3 3 6-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
       + mediaHtml
       + '<div class="pcard-name">' + p.name + '</div>'
-      + '<div class="pcard-price">' + p.price + ' K&#269; / ks</div>'
+      + '<div class="pcard-price">' + p.price + ' K\u010d / ks</div>'
       + '<div class="pcard-controls" onclick="event.stopPropagation()">' + sizesHtml + '</div>'
       + '</div>';
   }).join('');
@@ -322,16 +319,16 @@ function renderCart() {
     });
   });
   var n = rows.length;
-  document.getElementById('cart-count').textContent = n + (n === 1 ? ' položka' : n < 5 ? ' položky' : ' položek');
+  document.getElementById('cart-count').textContent = n + (n === 1 ? ' polo\u017eka' : n < 5 ? ' polo\u017eky' : ' polo\u017eek');
   if (!rows.length) {
-    document.getElementById('cart-body').innerHTML = '<div class="cart-empty">Zatím nic v košíku.<br>Klikněte na produkt.</div>';
+    document.getElementById('cart-body').innerHTML = '<div class="cart-empty">Zat\u00edm nic v ko\u0161\u00edku.<br>Klikn\u011bte na produkt.</div>';
     document.getElementById('cart-total-row').style.display = 'none';
     return;
   }
   document.getElementById('cart-body').innerHTML = rows.map(function(r) {
     return '<div class="cart-row"><div><div class="cart-row-name">' + r.name + '</div>'
       + '<div class="cart-row-meta">' + r.sz + ' &times; ' + r.q + '</div></div>'
-      + '<div class="cart-row-price">' + r.sub + ' K&#269;</div></div>';
+      + '<div class="cart-row-price">' + r.sub + ' K\u010d</div></div>';
   }).join('');
   document.getElementById('cart-total-row').style.display = 'flex';
   document.getElementById('cart-total-amount').textContent = total + ' K\u010d';
@@ -371,10 +368,10 @@ function submitOrder() {
     });
   });
 
-  if (!name)         { alert('Vyplňte prosím jméno.'); return; }
-  if (!contact)      { alert('Vyplňte prosím e-mail nebo telefon.'); return; }
-  if (!rows.length)  { alert('Přidejte alespoň jeden produkt.'); return; }
-  if (!gdpr)         { alert('Potvrďte prosím souhlas s podmínkami.'); return; }
+  if (!name)        { alert('Vypl\u0148te pros\u00edm jm\u00e9no.'); return; }
+  if (!contact)     { alert('Vypl\u0148te pros\u00edm e-mail nebo telefon.'); return; }
+  if (!rows.length) { alert('P\u0159idejte alespo\u0148 jeden produkt.'); return; }
+  if (!gdpr)        { alert('Potvrte pros\u00edm souhlas s podm\u00ednkami.'); return; }
 
   var vs = Math.floor(Math.random() * 900000) + 100000;
   var qrData = 'SPD*1.0*ACC:CZ9330300000001030335017*AM:' + total + '.00*CC:CZK*MSG:Merch Kunratice*X-VS:' + vs;
@@ -383,7 +380,7 @@ function submitOrder() {
   document.getElementById('vs-display').textContent = vs;
   document.getElementById('amount-display').textContent = total + ' K\u010d';
   document.getElementById('order-list').innerHTML = rows.map(function(r) {
-    return r.name + ' (' + r.sz + ') &times; ' + r.q + ' = <strong>' + r.sub + ' K&#269;</strong>';
+    return r.name + ' (' + r.sz + ') &times; ' + r.q + ' = <strong>' + r.sub + ' K\u010d</strong>';
   }).join('<br>') + '<br><br><strong>Celkem: ' + total + ' K\u010d &middot; VS: ' + vs + '</strong>';
 
   document.getElementById('qr-canvas').innerHTML = '';
