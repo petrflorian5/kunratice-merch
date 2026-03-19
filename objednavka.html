@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moje objednávka – SK Slovan Kunratice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #4A1E8A; --purple-dark: #2E0F6A; --purple-mid: #6B35C2;
+  --purple-light: #9B6FDF; --purple-pale: #F0EAFF; --off-white: #FAF9FC;
+  --text: #1A0A2E; --text-muted: #6B5E85; --border: rgba(74,30,138,0.12); --radius: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
+.hero { background: var(--purple-dark); position: relative; overflow: hidden; }
+.hero-pattern { position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 0, transparent 50%); background-size: 24px 24px; }
+.hero-accent { position: absolute; right: -80px; top: -80px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(107,53,194,0.5) 0%, transparent 70%); pointer-events: none; }
+.hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; padding: 2.5rem 2rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
+.hero-logo { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+.hero-titles { flex: 1; }
+.hero-label { font-size: 11px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+.hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 42px); color: white; line-height: 1; letter-spacing: 1px; }
+.hero-title span { color: var(--purple-light); }
+.page { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+.card { background: white; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; margin-bottom: 1rem; }
+.card-header { background: var(--purple); padding: 1rem 1.25rem; }
+.card-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: white; letter-spacing: 1px; }
+.card-header p { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.card-body { padding: 1.25rem; }
+.info-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 1rem; }
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--text-muted); flex-shrink: 0; }
+.info-value { font-weight: 500; text-align: right; }
+.badge { display: inline-block; background: var(--purple-pale); color: var(--purple); font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 100px; }
+.badge.green { background: #e8f5e9; color: #2e7d32; }
+.section-label { font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple-mid); margin-bottom: 0.75rem; }
+.lookup-box { background: white; border-radius: var(--radius); border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1rem; }
+.lookup-box h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--purple); letter-spacing: 1px; margin-bottom: 0.5rem; }
+.lookup-box p { font-size: 13px; color: var(--text-muted); margin-bottom: 1.25rem; }
+.field { margin-bottom: 10px; }
+.field label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+.field input { width: 100%; font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--off-white); color: var(--text); outline: none; transition: border-color 0.2s; }
+.field input:focus { border-color: var(--purple-light); background: white; }
+.submit-btn { width: 100%; background: var(--purple); color: white; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+.submit-btn:hover { background: var(--purple-dark); }
+.error-box { background: #fce8e8; border: 1px solid #f5c6c6; border-radius: 10px; padding: 0.75rem 1rem; font-size: 13px; color: #c62828; margin-top: 0.75rem; display: none; }
+.cancel-btn { width: 100%; background: white; color: #c62828; border: 1.5px solid #f5c6c6; border-radius: 10px; padding: 11px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
+.cancel-btn:hover { background: #fce8e8; }
+.success-msg { background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 10px; padding: 0.75rem 1rem; font-size: 13px; color: #2e7d32; margin-top: 0.75rem; display: none; }
+.page-footer { text-align: center; padding: 1.5rem; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); max-width: 700px; margin: 0 auto; }
+.page-footer a { color: var(--purple); }
+.back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--purple); text-decoration: none; margin-bottom: 1.25rem; }
+.back-link:hover { text-decoration: underline; }
+#order-detail { display: none; }
+#lookup-section { display: block; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <img class="hero-logo" src="./SK-SLOVAN-Kunratice_logo_S.png" alt="SK Slovan Kunratice">
+    <div class="hero-titles">
+      <div class="hero-label">SK Slovan Kunratice &middot; Merch 2026</div>
+      <div class="hero-title">Moje <span>objednávka</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Vyhledání objednávky -->
+  <div id="lookup-section">
+    <a class="back-link" href="./index.html">&#8592; Zpět na shop</a>
+    <div class="lookup-box">
+      <h2>Zobrazit objednávku</h2>
+      <p>Zadejte číslo objednávky a e-mail který jste použili při objednávce.</p>
+      <div class="field">
+        <label>Číslo objednávky</label>
+        <input type="text" id="inp-kod" placeholder="KUN-2026-0001">
+      </div>
+      <div class="field">
+        <label>E-mail</label>
+        <input type="text" id="inp-email" placeholder="jana@email.cz">
+      </div>
+      <button class="submit-btn" onclick="loadOrder()">Zobrazit objednávku &rarr;</button>
+      <div class="error-box" id="error-box">Objednávka nenalezena. Zkontrolujte číslo objednávky a e-mail.</div>
+    </div>
+  </div>
+
+  <!-- Detail objednávky -->
+  <div id="order-detail">
+    <a class="back-link" href="#" onclick="showLookup()">&#8592; Zadat jiné číslo</a>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 id="detail-kod">—</h2>
+        <p id="detail-datum">—</p>
+      </div>
+      <div class="card-body">
+        <div class="section-label">Kontakt</div>
+        <div class="info-row"><span class="info-label">Jméno</span><span class="info-value" id="detail-jmeno">—</span></div>
+        <div class="info-row"><span class="info-label">E-mail / telefon</span><span class="info-value" id="detail-kontakt">—</span></div>
+        <div class="info-row" id="row-dite" style="display:none"><span class="info-label">Dítě</span><span class="info-value" id="detail-dite">—</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="section-label">Objednané zboží</div>
+        <div id="detail-produkty"></div>
+        <div class="info-row" style="margin-top:8px;">
+          <span class="info-label" style="font-weight:500;">Celkem</span>
+          <span class="info-value" style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--purple);" id="detail-celkem">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="section-label">Stav objednávky</div>
+        <div class="info-row">
+          <span class="info-label">Variabilní symbol</span>
+          <span class="info-value" id="detail-vs">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Zaplaceno</span>
+          <span class="info-value" id="detail-zaplaceno">—</span>
+        </div>
+        <div style="margin-top:1rem; font-size:12px; color:var(--text-muted); line-height:1.6;">
+          Platební instrukce zašleme po ukončení termínu objednávek a potvrzení dostatku objednávek. V případě dotazů: <strong>petrflorian5@gmail.com</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="section-label">Zrušení objednávky</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.6;">
+          Objednávku lze zrušit do uzavření termínu (1. června 2026). Po zrušení vás budeme kontaktovat.
+        </div>
+        <button class="cancel-btn" onclick="cancelOrder()">Zrušit objednávku</button>
+        <div class="success-msg" id="cancel-success">Žádost o zrušení byla odeslána. Brzy se vám ozveme.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  SK Slovan Kunratice &middot; Dotazy: <a href="mailto:petrflorian5@gmail.com">petrflorian5@gmail.com</a>
+</div>
+
+<script>
+var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyo7jQBQ3CEtKQq3hyc-pa02YSvKXJ5a9C-hVIzLpqIMEM83Z5GtQvgbyd3eVLTBdh6/exec';
+var currentOrder = null;
+
+// Auto-načtení z URL parametrů (z emailového odkazu)
+window.addEventListener('load', function() {
+  var params = new URLSearchParams(window.location.search);
+  var kod = params.get('kod');
+  var email = params.get('email');
+  if (kod && email) {
+    document.getElementById('inp-kod').value = kod;
+    document.getElementById('inp-email').value = email;
+    loadOrder();
+  }
+});
+
+function loadOrder() {
+  var kod = document.getElementById('inp-kod').value.trim();
+  var email = document.getElementById('inp-email').value.trim();
+  var errBox = document.getElementById('error-box');
+  errBox.style.display = 'none';
+
+  if (!kod || !email) {
+    errBox.textContent = 'Vyplňte prosím obě pole.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  var btn = document.querySelector('#lookup-section .submit-btn');
+  btn.textContent = 'Načítám...';
+  btn.disabled = true;
+
+  var url = SHEETS_URL + '?kod=' + encodeURIComponent(kod) + '&email=' + encodeURIComponent(email);
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.textContent = 'Zobrazit objednávku →';
+      btn.disabled = false;
+      if (data.result === 'ok') {
+        currentOrder = data;
+        showDetail(data);
+      } else {
+        errBox.textContent = 'Objednávka nenalezena. Zkontrolujte číslo objednávky a e-mail.';
+        errBox.style.display = 'block';
+      }
+    })
+    .catch(function() {
+      btn.textContent = 'Zobrazit objednávku →';
+      btn.disabled = false;
+      errBox.textContent = 'Chyba připojení. Zkuste to prosím znovu.';
+      errBox.style.display = 'block';
+    });
+}
+
+function showDetail(d) {
+  document.getElementById('detail-kod').textContent = d.orderCode;
+  document.getElementById('detail-datum').textContent = 'Objednáno: ' + d.datum;
+  document.getElementById('detail-jmeno').textContent = d.jmeno;
+  document.getElementById('detail-kontakt').textContent = d.kontakt;
+
+  if (d.dite) {
+    document.getElementById('detail-dite').textContent = d.dite;
+    document.getElementById('row-dite').style.display = 'flex';
+  }
+
+  var produkty = '';
+  var items = [
+    { label: 'Tričko fialové', val: d.trickoFialove },
+    { label: 'Tričko bílé',    val: d.trickoBile },
+    { label: 'Mikina',         val: d.mikina },
+    { label: 'Kšiltovka',      val: d.ksiltovka },
+    { label: 'Šála',           val: d.sala },
+    { label: 'Ponožky',        val: d.ponozky },
+    { label: 'Dětské tričko',  val: d.detTricko },
+    { label: 'Dětská mikina',  val: d.detMikina },
+  ];
+  items.forEach(function(item) {
+    if (item.val) {
+      produkty += '<div class="info-row"><span class="info-label">' + item.label + '</span><span class="info-value">' + item.val + '</span></div>';
+    }
+  });
+  document.getElementById('detail-produkty').innerHTML = produkty;
+
+  document.getElementById('detail-celkem').textContent = d.celkem + ' Kč';
+  document.getElementById('detail-vs').textContent = d.vs || '—';
+  document.getElementById('detail-zaplaceno').innerHTML = d.zaplaceno
+    ? '<span class="badge green">Zaplaceno</span>'
+    : '<span class="badge">Čeká na platbu</span>';
+
+  document.getElementById('lookup-section').style.display = 'none';
+  document.getElementById('order-detail').style.display = 'block';
+}
+
+function showLookup() {
+  document.getElementById('order-detail').style.display = 'none';
+  document.getElementById('lookup-section').style.display = 'block';
+}
+
+function cancelOrder() {
+  if (!currentOrder) return;
+  if (!confirm('Opravdu chcete zrušit objednávku ' + currentOrder.orderCode + '?')) return;
+
+  var subject = 'Zrušení objednávky ' + currentOrder.orderCode;
+  var body = 'Zákazník ' + currentOrder.jmeno + ' (' + currentOrder.kontakt + ') žádá o zrušení objednávky ' + currentOrder.orderCode + '.';
+
+  fetch(SHEETS_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      akce: 'zrusit',
+      orderCode: currentOrder.orderCode,
+      jmeno: currentOrder.jmeno,
+      kontakt: currentOrder.kontakt
+    })
+  }).catch(function() {});
+
+  document.getElementById('cancel-success').style.display = 'block';
+  document.querySelector('.cancel-btn').style.display = 'none';
+}
+</script>
+</body>
+</html>
