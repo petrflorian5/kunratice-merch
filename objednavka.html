@@ -18,7 +18,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
 .hero-pattern { position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 0, transparent 50%); background-size: 24px 24px; }
 .hero-accent { position: absolute; right: -80px; top: -80px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(107,53,194,0.5) 0%, transparent 70%); pointer-events: none; }
 .hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; padding: 2.5rem 2rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
-.hero-logo { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+.hero-logo { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; transition: opacity 0.2s; }
+.hero-logo:hover { opacity: 0.85; }
 .hero-titles { flex: 1; }
 .hero-label { font-size: 11px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
 .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 42px); color: white; line-height: 1; letter-spacing: 1px; }
@@ -63,7 +64,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
   <div class="hero-pattern"></div>
   <div class="hero-accent"></div>
   <div class="hero-inner">
-    <img class="hero-logo" src="./SK-SLOVAN-Kunratice_logo_S.png" alt="SK Slovan Kunratice">
+    <a href="./index.html">
+      <img class="hero-logo" src="./SK-SLOVAN-Kunratice_logo_S.png" alt="SK Slovan Kunratice">
+    </a>
     <div class="hero-titles">
       <div class="hero-label">SK Slovan Kunratice &middot; Merch 2026</div>
       <div class="hero-title">Moje <span>objednávka</span></div>
@@ -73,7 +76,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
 
 <div class="page">
 
-  <!-- Vyhledání objednávky -->
   <div id="lookup-section">
     <a class="back-link" href="./index.html">&#8592; Zpět na shop</a>
     <div class="lookup-box">
@@ -92,9 +94,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
     </div>
   </div>
 
-  <!-- Detail objednávky -->
   <div id="order-detail">
-    <a class="back-link" href="#" onclick="showLookup()">&#8592; Zadat jiné číslo</a>
+    <a class="back-link" href="#" onclick="showLookup(); return false;">&#8592; Zadat jiné číslo</a>
 
     <div class="card">
       <div class="card-header">
@@ -111,7 +112,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
 
     <div class="card">
       <div class="card-body">
-        <div class="section-label">Objednané zboží</div>
+        <div class="section-label">Objedné zboží</div>
         <div id="detail-produkty"></div>
         <div class="info-row" style="margin-top:8px;">
           <span class="info-label" style="font-weight:500;">Celkem</span>
@@ -141,10 +142,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
       <div class="card-body">
         <div class="section-label">Zrušení objednávky</div>
         <div style="font-size:12px; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.6;">
-          Objednávku lze zrušit do uzavření termínu (1. června 2026). Po zrušení vás budeme kontaktovat.
+          Objednávku lze zrušit do uzavření termínu (1. června 2026).
         </div>
-        <button class="cancel-btn" onclick="cancelOrder()">Zrušit objednávku</button>
-        <div class="success-msg" id="cancel-success">Žádost o zrušení byla odeslána. Brzy se vám ozveme.</div>
+        <button class="cancel-btn" id="cancel-btn" onclick="cancelOrder()">Zrušit objednávku</button>
+        <div class="success-msg" id="cancel-success">Vaše objednávka byla zrušena.</div>
       </div>
     </div>
   </div>
@@ -153,13 +154,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
 
 <div class="page-footer">
   SK Slovan Kunratice &middot; Dotazy: <a href="mailto:petrflorian5@gmail.com">petrflorian5@gmail.com</a>
+  &middot; <a href="./index.html">Zpět na shop</a>
 </div>
 
 <script>
 var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyo7jQBQ3CEtKQq3hyc-pa02YSvKXJ5a9C-hVIzLpqIMEM83Z5GtQvgbyd3eVLTBdh6/exec';
 var currentOrder = null;
 
-// Auto-načtení z URL parametrů (z emailového odkazu)
 window.addEventListener('load', function() {
   var params = new URLSearchParams(window.location.search);
   var kod = params.get('kod');
@@ -258,8 +259,9 @@ function cancelOrder() {
   if (!currentOrder) return;
   if (!confirm('Opravdu chcete zrušit objednávku ' + currentOrder.orderCode + '?')) return;
 
-  var subject = 'Zrušení objednávky ' + currentOrder.orderCode;
-  var body = 'Zákazník ' + currentOrder.jmeno + ' (' + currentOrder.kontakt + ') žádá o zrušení objednávky ' + currentOrder.orderCode + '.';
+  var btn = document.getElementById('cancel-btn');
+  btn.textContent = 'Ruším...';
+  btn.disabled = true;
 
   fetch(SHEETS_URL, {
     method: 'POST',
@@ -269,10 +271,15 @@ function cancelOrder() {
       jmeno: currentOrder.jmeno,
       kontakt: currentOrder.kontakt
     })
-  }).catch(function() {});
-
-  document.getElementById('cancel-success').style.display = 'block';
-  document.querySelector('.cancel-btn').style.display = 'none';
+  })
+  .then(function() {
+    document.getElementById('cancel-success').style.display = 'block';
+    btn.style.display = 'none';
+  })
+  .catch(function() {
+    document.getElementById('cancel-success').style.display = 'block';
+    btn.style.display = 'none';
+  });
 }
 </script>
 </body>
