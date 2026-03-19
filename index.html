@@ -169,7 +169,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
       </div>
       <div class="success-body">
         <div class="bank-info">
-          Platební instrukce ti zašleme emailem jakmile potvrdíme dostatek objednávek a spustíme výrobu.<br><br>
+          Platební instrukce zašleme po ukončení termínu objednávek a potvrzení dostatku objednávek. Následně zboží půjde do výroby.<br><br>
           V případě dotazů: <strong>petrflorian5@gmail.com</strong>
         </div>
         <div class="order-list" id="order-list"></div>
@@ -188,7 +188,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: 
     <h3>Kdo stojí za touto stránkou</h3>
     <p>Tato stránka je komunitní iniciativou přátel a rodičů fotbalového klubu SK Slovan Kunratice. Nejde o oficiální aktivitu ani prodej provozovaný spolkem SK Slovan Kunratice, z.s. Provozovatelem je Petr Florian, kontakt: petrflorian5@gmail.com.</p>
     <h3>Charakter objednávky</h3>
-    <p>Odesláním formuláře vyjadřujete zájem o zakoupení merchandise. Objednávka není závaznou smlouvou &ndash; jedná se o nezávaznou poptávku. Vyhrazujeme si právo objednávku neuskutečnit, zejména v případě nedostatečného počtu objednávek, nedostupnosti zboží u dodavatele nebo z jiných provozních důvodů. V takovém případě vás budeme kontaktovat a případná platba bude neprodleně vrácena.</p>
+    <p>Odeslaním formuláře vyjadřujete zájem o zakoupení merchandise. Objednávka není závaznou smlouvou &ndash; jedná se o nezávaznou poptávku. Vyhrazujeme si právo objednávku neuskutečnit, zejména v případě nedostatečného počtu objednávek, nedostupnosti zboží u dodavatele nebo z jiných provozních důvodů. V takovém případě vás budeme kontaktovat a případná platba bude neprodleně vrácena.</p>
     <h3>Platba</h3>
     <p>Platba probíhá až po potvrzení objednávky z naší strany. Po uzavření objednávkového kola vám zašleme email s platebními instrukcemi. V případě neuskutečnění objednávky platba nebude vyžadována.</p>
     <h3>Ochrana osobních údajů (GDPR)</h3>
@@ -244,8 +244,7 @@ function renderProducts() {
   document.getElementById('products-grid').innerHTML = PRODUCTS.map(function(p) {
     var st = state[p.id];
     var mediaHtml = p.img
-      ? '<img class="pcard-img" src="./' + p.img + '" alt="' + p.name + '" onclick="openLightbox(event,\'./' + p.img + '\')">'
-      : '<div class="pcard-icon">' + p.icon + '</div>';
+      ? '<img class="pcard-img" src="./' + p.img + '" alt="' + p.name + '" onclick="openLightbox(event,\'./' + p.img + '\')">'      : '<div class="pcard-icon">' + p.icon + '</div>';
     var sizesHtml = p.sizes.map(function(sz) {
       var q = st.sizes[sz];
       return '<div class="size-row">'
@@ -354,7 +353,7 @@ function submitOrder() {
     jmeno: name, kontakt: contact, dite: child,
     trickoFialove:'', trickoBile:'', mikina:'', ksiltovka:'',
     sala:'', ponozky:'', detTricko:'', detMikina:'',
-    celkem: total, vs: Math.floor(Math.random() * 900000) + 100000
+    celkem: total
   };
   PRODUCTS.forEach(function(p) {
     var parts = [];
